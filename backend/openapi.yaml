@@ -1,0 +1,87 @@
+openapi: 3.1.0
+info:
+  title: PSP Demo Pay-In API
+  version: "1.0"
+paths:
+  /v1/payments:
+    post:
+      summary: Create Pay-In
+      security: [{ ApiKeyAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PaymentCreate" }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Payment" }
+  /v1/payments/{id}:
+    get:
+      summary: Get Pay-In status
+      security: [{ ApiKeyAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Payment" }
+  /v1/testhelpers/payments/{id}/succeed:
+    post:
+      summary: Force succeed (sandbox only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: no-content
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+  schemas:
+    Money:
+      type: object
+      required: [value, currency]
+      properties:
+        value: { type: string, pattern: '^\d+(\.\d{2})?$' }
+        currency: { type: string, enum: [NGN] }
+    PaymentStatus:
+      type: string
+      enum: [PENDING, SUCCEEDED, FAILED]
+    PaymentCreate:
+      type: object
+      required: [amount, currency, method, customer, callback_url]
+      properties:
+        amount: { $ref: "#/components/schemas/Money" }
+        method: { type: string, enum: [bank_transfer] }
+        customer:
+          type: object
+          properties:
+            email: { type: string, format: email }
+        callback_url: { type: string, format: uri }
+    Payment:
+      allOf:
+        - $ref: "#/components/schemas/PaymentCreate"
+        - type: object
+          required: [id, status, created_at]
+          properties:
+            id: { type: string }
+            status: { $ref: "#/components/schemas/PaymentStatus" }
+            created_at: { type: string, format: date-time }
+            bank_account:
+              type: object
+              properties:
+                account_number: { type: string }
+                bank_name: { type: string }
