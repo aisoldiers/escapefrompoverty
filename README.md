@@ -4,6 +4,16 @@ This repository contains a minimal demo of a Pay‑In flow with a NestJS backend
 
 ## Local start
 
+Before running the services for the first time apply the Prisma migrations:
+
+```bash
+cd backend
+npx prisma migrate dev
+cd ..
+```
+
+Then start all containers:
+
 ```bash
 docker-compose up -d
 ```
