@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, Decimal } from '@prisma/client';
 
 @Injectable()
 export class PaymentsService {
@@ -10,7 +10,7 @@ export class PaymentsService {
   async create(data: CreatePaymentDto) {
     const tx = await this.prisma.transaction.create({
       data: {
-        amount: new Prisma.Decimal(data.amount.value),
+        amount: new Decimal(data.amount.value),
         currency: data.amount.currency,
         status: 'PENDING',
         customer_email: data.customer.email,
