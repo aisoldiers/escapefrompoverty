@@ -9,4 +9,4 @@ FROM node:20-alpine
 WORKDIR /app
 COPY --from=build /app .
 ENV NODE_ENV=production
-CMD ["node", "dist/main.js"]
+CMD ["sh","-c","npm run typeorm:migration:run && node dist/main.js"]
