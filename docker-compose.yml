@@ -18,7 +18,9 @@ services:
       - "15672:15672"
 
   gateway-api:
-    build: ./gateway-api
+    build:
+      context: .
+      dockerfile: gateway-api/Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -31,7 +33,9 @@ services:
       - "8000:8000"
 
   core-payments:
-    build: ./core-payments
+    build:
+      context: .
+      dockerfile: core-payments/Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -43,7 +47,9 @@ services:
       ADAPTER_URL: http://adapter-kora:8000
 
   adapter-kora:
-    build: ./adapter-kora
+    build:
+      context: .
+      dockerfile: adapter-kora/Dockerfile
     environment:
       WEBHOOK_URL: http://webhook-dispatcher:8000/webhooks/kora
     depends_on:
@@ -51,13 +57,17 @@ services:
         condition: service_started
 
   ledger:
-    build: ./ledger
+    build:
+      context: .
+      dockerfile: ledger/Dockerfile
     depends_on:
       db:
         condition: service_healthy
 
   webhook-dispatcher:
-    build: ./webhook-dispatcher
+    build:
+      context: .
+      dockerfile: webhook-dispatcher/Dockerfile
     depends_on:
       rabbitmq:
         condition: service_started
