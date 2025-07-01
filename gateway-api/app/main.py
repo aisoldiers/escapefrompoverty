@@ -70,6 +70,7 @@ def consume():
                     tx.status = PaymentStatus.SUCCEEDED
                     s.add(tx)
                     s.commit()
+    channel.queue_declare(queue='gateway', durable=True)
     channel.basic_consume(queue='gateway', on_message_callback=cb, auto_ack=True)
     channel.queue_bind(queue='gateway', exchange='payments.events', routing_key='payment.succeeded')
     channel.start_consuming()
