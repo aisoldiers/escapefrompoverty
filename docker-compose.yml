@@ -1,0 +1,71 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  gateway-api:
+    build: ./gateway-api
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/postgres
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    ports:
+      - "8000:8000"
+
+  core-payments:
+    build: ./core-payments
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/postgres
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      ADAPTER_URL: http://adapter-kora:8000
+
+  adapter-kora:
+    build: ./adapter-kora
+    environment:
+      WEBHOOK_URL: http://webhook-dispatcher:8000/webhooks/kora
+    depends_on:
+      rabbitmq:
+        condition: service_started
+
+  ledger:
+    build: ./ledger
+    depends_on:
+      db:
+        condition: service_healthy
+
+  webhook-dispatcher:
+    build: ./webhook-dispatcher
+    depends_on:
+      rabbitmq:
+        condition: service_started
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      gateway-api:
+        condition: service_started

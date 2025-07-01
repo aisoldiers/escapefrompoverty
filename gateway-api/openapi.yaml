@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  title: PSP Gateway API
+  version: '1.0'
+paths:
+  /v1/payments:
+    post:
+      summary: Create Pay-In
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: created
+  /v1/payments/{id}:
+    get:
+      summary: Get Pay-In
+      responses:
+        '200':
+          description: ok
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization

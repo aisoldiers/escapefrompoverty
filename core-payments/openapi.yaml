@@ -1,0 +1,11 @@
+openapi: 3.1.0
+info:
+  title: Core Payments API
+  version: '1.0'
+paths:
+  /health:
+    get:
+      summary: Health
+      responses:
+        '200':
+          description: ok

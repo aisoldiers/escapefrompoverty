@@ -1,0 +1,6 @@
+FROM python:3.12-slim
+WORKDIR /app
+COPY ./app /app/app
+COPY ../wait-for-it.sh /wait-for-it.sh
+RUN pip install fastapi uvicorn[standard] pika
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
