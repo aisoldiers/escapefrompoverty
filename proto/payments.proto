@@ -1,0 +1,36 @@
+syntax = "proto3";
+package payments.v1;
+
+import "google/protobuf/timestamp.proto";
+
+service PaymentsService {
+  rpc CreatePayment (CreatePaymentRequest) returns (Payment);
+  rpc GetPayment    (GetPaymentRequest)    returns (Payment);
+}
+
+message Money {
+  string currency = 1;
+  string value    = 2;   // "5000.00"
+}
+
+enum Status {
+  PENDING    = 0;
+  PROCESSING = 1;
+  SUCCEEDED  = 2;
+  FAILED     = 3;
+}
+
+message CreatePaymentRequest {
+  Money  amount          = 1;
+  string method          = 2; // "bank_transfer"
+  string customer_email  = 3;
+}
+
+message GetPaymentRequest { string id = 1; }
+
+message Payment {
+  string                     id            = 1;
+  Money                      amount        = 2;
+  Status                     status        = 3;
+  google.protobuf.Timestamp  created_at    = 4;
+}
