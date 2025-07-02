@@ -1,0 +1,8 @@
+{
+  "name": "webhook-dispatcher",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "dependencies": {
+    "fastify": "^4.25.2"
+  }
+}
